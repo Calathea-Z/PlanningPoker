@@ -1,0 +1,1 @@
+export type VotesMap = Record<string, number | null>
