@@ -80,28 +80,53 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
       <Header meName={meName} />
-      <div className="p-6">
-        <div className="max-w-6xl mx-auto space-y-8">
-          <HeaderControls
-            roomCode={r!.code}
-            canReveal={canReveal}
-            onReveal={handleReveal}
-            onReset={handleReset}
-          />
+      
+      <div className="flex-1 p-4 overflow-hidden">
+        <div className="h-full max-w-7xl mx-auto flex flex-col gap-4">
+          {/* Top Row: Header Controls and Issue Panel */}
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <HeaderControls
+                roomCode={r!.code}
+                canReveal={canReveal}
+                onReveal={handleReveal}
+                onReset={handleReset}
+              />
+            </div>
+            <div className="w-80">
+              <IssuePanel roomCode={r!.code} issueKey={r!.issueKey ?? null} revealed={revealed} />
+            </div>
+          </div>
 
-          <IssuePanel roomCode={r!.code} issueKey={r!.issueKey ?? null} revealed={revealed} />
+          {/* Main Content: Voting Deck and Players */}
+          <div className="flex-1 flex gap-4 min-h-0">
+            {/* Left: Voting Deck */}
+            <div className="w-2/3">
+              <VotingDeck roomCode={r!.code} />
+            </div>
 
-          <VotingDeck roomCode={r!.code} />
-
-          <section className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-3xl p-6 shadow-2xl">
-            <h3 className="font-semibold mb-4 text-slate-200 text-lg">Players</h3>
-            <PlayersGrid room={r!} shouldFlipCards={!!shouldFlipCards} />
-
-            {shouldShowCountdown && countdown !== null && <Countdown value={countdown} />}
-            {shouldFlipCards && <Tally value={tally} />}
-          </section>
+            {/* Right: Players Section */}
+            <div className="w-1/3 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-3xl p-4 shadow-2xl">
+              <h3 className="font-semibold mb-3 text-slate-200 text-base">Players</h3>
+              <div className="space-y-3">
+                <PlayersGrid room={r!} shouldFlipCards={!!shouldFlipCards} />
+                
+                {shouldShowCountdown && countdown !== null && (
+                  <div className="mt-3">
+                    <Countdown value={countdown} />
+                  </div>
+                )}
+                
+                {shouldFlipCards && (
+                  <div className="mt-3">
+                    <Tally value={tally} />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

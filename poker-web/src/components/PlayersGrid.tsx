@@ -7,13 +7,13 @@ export default function PlayersGrid({
   shouldFlipCards: boolean;
 }) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 gap-2">
       {Object.entries(room.players || {}).map(([id, p]) => {
         const voted = id in (room.votes || {});
         const val = room.votes?.[id];
         return (
           <div key={id}
-               className={`aspect-[3/4] rounded-2xl border-2 transition-all duration-700 shadow-xl ${
+               className={`aspect-[4/3] rounded-xl border-2 transition-all duration-700 shadow-lg ${
                  voted 
                    ? shouldFlipCards 
                      ? 'bg-gradient-to-br from-blue-600 to-blue-700 border-blue-500' 
@@ -24,18 +24,18 @@ export default function PlayersGrid({
                  transform: shouldFlipCards ? 'rotateY(180deg)' : 'rotateY(0deg)', 
                  transformStyle: 'preserve-3d' 
                }}>
-            <div className="h-full flex flex-col items-center justify-center p-4"
+            <div className="h-full flex flex-col items-center justify-center p-2"
                  style={{ 
                    transform: shouldFlipCards ? 'rotateY(180deg)' : 'rotateY(0deg)', 
                    backfaceVisibility: 'hidden' 
                  }}>
-              <div className="text-sm font-medium text-center mb-2 text-white">{p.name}</div>
+              <div className="text-xs font-medium text-center mb-1 text-white">{p.name}</div>
               {voted ? (
-                <div className={`text-3xl font-bold ${shouldFlipCards ? 'text-white' : 'text-white'}`}>
+                <div className={`text-xl font-bold ${shouldFlipCards ? 'text-white' : 'text-white'}`}>
                   {shouldFlipCards ? (val ?? '?') : '✓'}
                 </div>
               ) : (
-                <div className="text-sm text-slate-300">Waiting...</div>
+                <div className="text-xs text-slate-300">Waiting...</div>
               )}
             </div>
           </div>
