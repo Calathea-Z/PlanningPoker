@@ -1,17 +1,20 @@
-import { useMemo, useCallback } from 'react';
-import { useUI } from './store';
-import { useRoomEvents } from './hooks/useRoomEvents';
-import { useConsensus } from './hooks/useConsensus';
-import { reveal as revealAction, resetRound as resetAction } from './services/roomActions';
-import Header from './components/Header';
-import JoinScreen from './components/JoinScreen';
-import HeaderControls from './components/HeaderControls';
-import IssuePanel from './components/IssuePanel';
-import VotingDeck from './components/VotingDeck';
-import PlayersGrid from './components/PlayersGrid';
-import Countdown from './components/Countdown';
-import Tally from './components/Tally';
-import type { RoomState } from './types/RoomState';
+import { useMemo, useCallback } from "react";
+import { useUI } from "./store";
+import { useRoomEvents } from "./hooks/useRoomEvents";
+import { useConsensus } from "./hooks/useConsensus";
+import {
+  reveal as revealAction,
+  resetRound as resetAction,
+} from "./services/roomActions";
+import Header from "./components/Header";
+import JoinScreen from "./components/JoinScreen";
+import HeaderControls from "./components/HeaderControls";
+import IssuePanel from "./components/IssuePanel";
+import VotingDeck from "./components/VotingDeck";
+import PlayersGrid from "./components/PlayersGrid";
+import Countdown from "./components/Countdown";
+import Tally from "./components/Tally";
+import type { RoomState } from "./types/RoomState";
 
 export default function App() {
   const { me, room, setMe, setRoom } = useUI();
@@ -31,7 +34,7 @@ export default function App() {
   }, [room]);
 
   const r: RoomState | undefined = room ?? undefined;
-  const meName = me?.name ?? '';
+  const meName = me?.name ?? "";
 
   const revealed = r?.revealed ?? false;
   const countdown = r?.countdown ?? null;
@@ -80,12 +83,12 @@ export default function App() {
   return (
     <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
       <Header meName={meName} />
-      
+
       <div className="flex-1 p-4 overflow-hidden">
         <div className="h-full max-w-7xl mx-auto flex flex-col gap-4">
           {/* Top Row: Header Controls and Issue Panel */}
-          <div className="flex gap-4 h-20">
-            <div className="flex-1">
+          <div className="flex gap-4 items-stretch">
+            <div className="flex-1 min-w-0">
               <HeaderControls
                 roomCode={r!.code}
                 canReveal={canReveal}
@@ -93,9 +96,13 @@ export default function App() {
                 onReset={handleReset}
               />
             </div>
-            <div className="w-96">
-              <IssuePanel roomCode={r!.code} issueKey={r!.issueKey ?? null} revealed={revealed} />
-            </div>
+            <aside className="w-96 min-w-[20rem]">
+              <IssuePanel
+                roomCode={r!.code}
+                issueKey={r!.issueKey ?? null}
+                revealed={revealed}
+              />
+            </aside>
           </div>
 
           {/* Main Content: Voting Deck and Players */}
@@ -107,16 +114,18 @@ export default function App() {
 
             {/* Right: Players Section */}
             <div className="w-1/3 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-3xl p-4 shadow-2xl">
-              <h3 className="font-semibold mb-3 text-slate-200 text-base">Players</h3>
+              <h3 className="font-semibold mb-3 text-slate-200 text-base">
+                Players
+              </h3>
               <div className="space-y-3">
                 <PlayersGrid room={r!} shouldFlipCards={!!shouldFlipCards} />
-                
+
                 {shouldShowCountdown && countdown !== null && (
                   <div className="mt-3">
                     <Countdown value={countdown} />
                   </div>
                 )}
-                
+
                 {shouldFlipCards && (
                   <div className="mt-3">
                     <Tally value={tally} />

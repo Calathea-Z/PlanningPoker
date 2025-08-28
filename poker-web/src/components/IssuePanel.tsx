@@ -1,92 +1,91 @@
-import { useState } from 'react';
-import { FIB_DECK } from '../utils/fibDeck';
-import { attachIssue, commitToJira } from '../services/roomActions';
+import { useState } from "react";
+import { FIB_DECK } from "../utils/fibDeck";
+import { attachIssue, commitToJira } from "../services/roomActions";
 
 export default function IssuePanel({
-  roomCode, issueKey, revealed,
+  roomCode,
+  issueKey,
+  revealed,
 }: {
   roomCode: string;
   issueKey: string | null;
   revealed: boolean;
 }) {
-  const [localKey, setLocalKey] = useState('');
+  const [localKey, setLocalKey] = useState("");
 
-  async function handleAttach() {
+  async function handleAttach(e?: React.FormEvent) {
+    if (e) e.preventDefault();
     const k = localKey.trim();
     if (!k) return;
     await attachIssue(roomCode, k);
-    setLocalKey('');
+    setLocalKey("");
   }
 
   async function handleCommit(v: number) {
     if (!issueKey) return;
     const ok = await commitToJira(roomCode, issueKey, v);
-    if (!ok) alert('Jira commit failed');
+    if (!ok) alert("Jira commit failed");
   }
 
   return (
-    <section className="h-full bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-3xl p-3 shadow-2xl flex flex-col overflow-hidden">
-      <div className="flex-1 flex flex-col min-h-0">
-        {/* Header */}
-        <div className="mb-2">
-          <h3 className="font-semibold text-slate-200 text-sm mb-2">JIRA Issue</h3>
-          
-          {/* Input Section */}
-          <div className="space-y-2">
-            <input 
-              className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-2 py-1.5 text-slate-100 placeholder-slate-400 focus:border-blue-400 focus:ring-1 focus:ring-blue-400/20 transition-all text-xs"
-              placeholder="ISSUE-123" 
-              value={localKey}
-              onChange={e=>setLocalKey(e.target.value)}
-            />
-            <button 
-              className="w-full px-2 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-xs"
-              onClick={handleAttach}
-            >
-              Attach Issue
-            </button>
-          </div>
-        </div>
+<section className="h-full min-w-0 max-w-full bg-slate-800/60 backdrop-blur-sm
+  border border-slate-700/60 rounded-3xl p-4 shadow-xl flex flex-col
+  overflow-hidden"> {/* <- clip children to the rounded card */}
+  <div className="flex-1 min-h-0 flex flex-col gap-3 min-w-0">
+    <h3 className="text-sm font-semibold text-slate-200">Issue Management</h3>
 
-        {/* Current Issue Display */}
-        {issueKey && (
-          <div className="mb-2 p-2 bg-slate-700/30 rounded-lg border border-slate-600/50">
-            <div className="text-xs text-slate-400 mb-1">Current Issue</div>
-            <div className="text-xs font-medium text-blue-400 truncate">{issueKey}</div>
-          </div>
-        )}
-
-        {/* Commit Section */}
-        {revealed && issueKey && (
-          <div className="mt-auto">
-            <div className="text-xs text-slate-400 mb-1">Commit to Jira</div>
-            <div className="grid grid-cols-3 gap-1 mb-1">
-              {FIB_DECK.slice(0, 9).map(v => (
-                <button 
-                  key={v} 
-                  className="px-1 py-1 bg-slate-700/50 border border-slate-600 hover:border-blue-400 text-slate-200 font-medium rounded text-xs transition-all duration-200 hover:bg-slate-600/50 transform hover:-translate-y-0.5"
-                  onClick={() => handleCommit(v)} 
-                  title={`Set ${v} in Jira`}
-                >
-                  {v}
-                </button>
-              ))}
-            </div>
-            <div className="grid grid-cols-2 gap-1">
-              {FIB_DECK.slice(9).map(v => (
-                <button 
-                  key={v} 
-                  className="px-1 py-1 bg-slate-700/50 border border-slate-600 hover:border-blue-400 text-slate-200 font-medium rounded text-xs transition-all duration-200 hover:bg-slate-600/50 transform hover:-translate-y-0.5"
-                  onClick={() => handleCommit(v)} 
-                  title={`Set ${v} in Jira`}
-                >
-                  {v}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+    {/* Input row */}
+    <form onSubmit={handleAttach} className="flex items-stretch gap-2 min-w-0 max-w-full">
+      <div className="flex-1 min-w-0 w-[1px]"> {/* <- the w-[1px] trick ensures flex-basis shrinks */}
+        <label htmlFor="issueKey" className="sr-only">Issue key</label>
+        <input
+          id="issueKey"
+          className="block w-full min-w-0 bg-slate-900/40 border border-slate-600/80
+            rounded-xl px-3 py-2 text-slate-100 placeholder-slate-400 focus:outline-none
+            focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400 text-sm"
+          placeholder="Enter issue key (e.g., ISSUE-123)"
+          value={localKey}
+          onChange={(e) => setLocalKey(e.target.value)}
+          spellCheck={false}
+          autoCapitalize="characters"
+        />
       </div>
-    </section>
+      <button
+        type="submit"
+        className="shrink-0 px-3 py-2 rounded-xl bg-slate-600 hover:bg-slate-500
+          text-white text-sm font-medium transition"
+      >
+        Attach
+      </button>
+    </form>
+
+    {issueKey && (
+      <div className="min-w-0 rounded-xl border border-slate-600/60 bg-slate-900/30 px-3 py-2">
+        <div className="text-[11px] uppercase tracking-wide text-slate-400">Current Issue</div>
+        <div className="text-sm font-medium text-blue-400 truncate">{issueKey}</div>
+      </div>
+    )}
+
+    {revealed && issueKey && (
+      <div className="mt-auto min-w-0">
+        <div className="text-[11px] uppercase tracking-wide text-slate-400 mb-2">Commit to JIRA</div>
+        <div className="flex flex-wrap gap-1.5">
+          {FIB_DECK.map((v) => (
+            <button
+              key={v}
+              type="button"
+              className="px-2 py-1.5 rounded-lg bg-slate-800/60 border border-slate-600/70
+                text-slate-100 text-sm hover:border-blue-400 hover:bg-slate-700/60 transition"
+              onClick={() => handleCommit(v)}
+              title={`Set ${v} in JIRA`}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</section>
   );
 }
