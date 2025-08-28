@@ -4,11 +4,12 @@ import { createRoom, joinRoom } from '../services/roomActions';
 export default function JoinScreen({
   onSetMe, onSetCode,
 }: {
-  onSetMe: (name: string) => void;
+  onSetMe: (name: string, isSpectator: boolean) => void;
   onSetCode: (code: string) => void;
 }) {
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
+  const [isSpectator, setIsSpectator] = useState(false);
 
   async function handleNewRoom() {
     const newCode = await createRoom();
@@ -19,8 +20,8 @@ export default function JoinScreen({
 
   async function handleJoin() {
     if (!name || !code) return;
-    onSetMe(name);
-    await joinRoom(code, name, false);
+    onSetMe(name, isSpectator);
+    await joinRoom(code, name, isSpectator);
   }
 
   return (
@@ -61,12 +62,37 @@ export default function JoinScreen({
           </div>
         </div>
 
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium text-slate-300">Join as spectator</label>
+            <button
+              type="button"
+              onClick={() => setIsSpectator(!isSpectator)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-800 ${
+                isSpectator ? 'bg-blue-500' : 'bg-slate-600'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  isSpectator ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+          <p className="text-xs text-slate-400">
+            {isSpectator 
+              ? "Spectators can watch the voting but cannot participate in voting themselves."
+              : "Participants can vote and actively contribute to the planning session."
+            }
+          </p>
+        </div>
+
         <button 
           className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-xl py-4 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           onClick={handleJoin}
           disabled={!name || !code}
         >
-          Join Room
+          {isSpectator ? 'Join as Spectator' : 'Join Room'}
         </button>
 
         <p className="text-xs text-slate-500 text-center">

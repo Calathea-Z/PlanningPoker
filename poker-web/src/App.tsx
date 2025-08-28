@@ -84,8 +84,8 @@ export default function App() {
     <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
       <Header meName={meName} />
 
-      <div className="flex-1 p-4 overflow-hidden">
-        <div className="h-full max-w-7xl mx-auto flex flex-col gap-4">
+      <div className="flex-1 p-3 overflow-hidden">
+        <div className="h-full max-w-7xl mx-auto flex flex-col gap-3">
           {/* Top Row: Header Controls and Issue Panel */}
           <div className="flex gap-4 items-stretch">
             <div className="flex-1 min-w-0">
@@ -106,28 +106,28 @@ export default function App() {
           </div>
 
           {/* Main Content: Voting Deck and Players */}
-          <div className="flex-1 flex gap-4 min-h-0">
+          <div className="flex-1 flex gap-3 min-h-0">
             {/* Left: Voting Deck */}
             <div className="w-2/3">
-              <VotingDeck roomCode={r!.code} />
+              <VotingDeck roomCode={r!.code} room={r!} />
             </div>
 
             {/* Right: Players Section */}
-            <div className="w-1/3 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-3xl p-4 shadow-2xl">
-              <h3 className="font-semibold mb-3 text-slate-200 text-base">
+            <div className="w-1/3 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-3xl p-3 shadow-2xl">
+              <h3 className="font-semibold mb-2 text-slate-200 text-sm">
                 Players
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <PlayersGrid room={r!} shouldFlipCards={!!shouldFlipCards} />
 
                 {shouldShowCountdown && countdown !== null && (
-                  <div className="mt-3">
+                  <div className="mt-2">
                     <Countdown value={countdown} />
                   </div>
                 )}
 
                 {shouldFlipCards && (
-                  <div className="mt-3">
+                  <div className="mt-2">
                     <Tally value={tally} />
                   </div>
                 )}

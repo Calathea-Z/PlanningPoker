@@ -1,6 +1,6 @@
-// hooks/useRoomEvents.ts
 import { useEffect, useRef } from 'react';
 import { getConnection, ensureConnected } from '../realtime';
+import { useUI } from '../store';
 import type { RoomState } from '../types/RoomState';
 
 export function useRoomEvents({
@@ -11,12 +11,27 @@ export function useRoomEvents({
   setRoom: (next: RoomState) => void;
 }) {
   const roomRef = useRef<RoomState | null>(room ?? null);
+  const { me, setMe } = useUI();
+  
   useEffect(() => { roomRef.current = room ?? null; }, [room]);
 
   useEffect(() => {
     const conn = getConnection('');
 
-    conn.on('room_state', (state: RoomState) => setRoom(state));
+    conn.on('room_state', (state: RoomState) => {
+      setRoom(state);
+      
+      // Update connectionId if we don't have it yet
+      if (me && !me.connectionId) {
+        // Find our player in the room state
+        const ourPlayer = Object.entries(state.players).find(([_, player]) => 
+          player.name === me.name
+        );
+        if (ourPlayer) {
+          setMe(me.name, me.isSpectator, ourPlayer[0]); // connectionId
+        }
+      }
+    });
 
     conn.on('player_voted', (connId: string) => {
       const prev = roomRef.current;
@@ -66,5 +81,5 @@ export function useRoomEvents({
       conn.off('revealed');
       conn.off('round_reset');
     };
-  }, [setRoom]);
+  }, [setRoom, me, setMe]);
 }
