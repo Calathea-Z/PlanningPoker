@@ -1,33 +1,26 @@
-import { useState } from 'react'
-import { useUI } from '../store'
-import { ensureConnected } from '../realtime'
+import { useState } from 'react';
+import { createRoom, joinRoom } from '../services/roomActions';
 
-interface JoinScreenProps {
-  onJoin?: () => void
-}
+export default function JoinScreen({
+  onSetMe, onSetCode,
+}: {
+  onSetMe: (name: string) => void;
+  onSetCode: (code: string) => void;
+}) {
+  const [name, setName] = useState('');
+  const [code, setCode] = useState('');
 
-export default function JoinScreen({ onJoin }: JoinScreenProps) {
-  const { setMe, setRoom } = useUI()
-  const [name, setName] = useState('')
-  const [code, setCode] = useState('')
-
-  async function createRoom() {
-    const res = await fetch('/api/rooms', { method: 'POST' })
-    if (!res.ok) {
-      alert('Failed to create room')
-      return
-    }
-    const { code } = await res.json()
-    setCode(code)
+  async function handleNewRoom() {
+    const newCode = await createRoom();
+    if (!newCode) return alert('Failed to create room');
+    setCode(newCode);
+    onSetCode(newCode);
   }
 
-  async function join() {
-    if (!name || !code) return
-    setMe(name)
-    const c = await ensureConnected()
-    console.log('Joining room:', code.toUpperCase(), 'as:', name)
-    await c.invoke('JoinRoom', code.toUpperCase(), name, false)
-    console.log('JoinRoom invoked, waiting for room_state event...')
+  async function handleJoin() {
+    if (!name || !code) return;
+    onSetMe(name);
+    await joinRoom(code, name, false);
   }
 
   return (
@@ -37,28 +30,20 @@ export default function JoinScreen({ onJoin }: JoinScreenProps) {
 
         <div className="space-y-2">
           <label className="block text-sm">Your name</label>
-          <input
-            className="w-full border rounded px-3 py-2"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <input className="w-full border rounded px-3 py-2"
+                 value={name} onChange={e=>setName(e.target.value)} />
         </div>
 
         <div className="space-y-2">
           <label className="block text-sm">Room code</label>
           <div className="flex gap-2">
-            <input
-              className="flex-1 border rounded px-3 py-2 uppercase"
-              value={code}
-              onChange={(e) => setCode(e.target.value.toUpperCase())}
-            />
-            <button className="px-3 py-2 border rounded" onClick={createRoom}>
-              New
-            </button>
+            <input className="flex-1 border rounded px-3 py-2 uppercase"
+                   value={code} onChange={e=>setCode(e.target.value.toUpperCase())}/>
+            <button className="px-3 py-2 border rounded" onClick={handleNewRoom}>New</button>
           </div>
         </div>
 
-        <button className="w-full bg-black text-white rounded-lg py-2" onClick={join}>
+        <button className="w-full bg-black text-white rounded-lg py-2" onClick={handleJoin}>
           Join
         </button>
 
@@ -67,5 +52,5 @@ export default function JoinScreen({ onJoin }: JoinScreenProps) {
         </p>
       </div>
     </div>
-  )
+  );
 }
