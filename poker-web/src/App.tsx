@@ -3,6 +3,7 @@ import { useUI } from './store';
 import { useRoomEvents } from './hooks/useRoomEvents';
 import { useCountdown } from './hooks/useCountdown';
 import { reveal as revealAction, resetRound as resetAction } from './services/roomActions';
+import Header from './components/Header';
 import JoinScreen from './components/JoinScreen';
 import HeaderControls from './components/HeaderControls';
 import IssuePanel from './components/IssuePanel';
@@ -70,31 +71,38 @@ export default function App() {
   const isJoined = !!(me && room);
 
   if (!isJoined) {
-    return <JoinScreen onSetMe={setMe} onSetCode={() => {}} />;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <Header meName={meName} />
+        <JoinScreen onSetMe={setMe} onSetCode={() => {}} />
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-5xl mx-auto space-y-6">
-        <HeaderControls
-          roomCode={r!.code}
-          meName={meName}
-          canReveal={canReveal}
-          onReveal={handleReveal}
-          onReset={handleReset}
-        />
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <Header meName={meName} />
+      <div className="p-6">
+        <div className="max-w-6xl mx-auto space-y-8">
+          <HeaderControls
+            roomCode={r!.code}
+            canReveal={canReveal}
+            onReveal={handleReveal}
+            onReset={handleReset}
+          />
 
-        <IssuePanel roomCode={r!.code} issueKey={r!.issueKey ?? null} revealed={revealed} />
+          <IssuePanel roomCode={r!.code} issueKey={r!.issueKey ?? null} revealed={revealed} />
 
-        <VotingDeck roomCode={r!.code} />
+          <VotingDeck roomCode={r!.code} />
 
-        <section className="bg-white rounded-2xl p-4 shadow">
-          <h3 className="font-medium mb-2">Players</h3>
-          <PlayersGrid room={r!} shouldFlipCards={!!shouldFlipCards} />
+          <section className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-3xl p-6 shadow-2xl">
+            <h3 className="font-semibold mb-4 text-slate-200 text-lg">Players</h3>
+            <PlayersGrid room={r!} shouldFlipCards={!!shouldFlipCards} />
 
-          {shouldShowCountdown && countdown !== null && <Countdown value={countdown} />}
-          {shouldFlipCards && <Tally value={tally} />}
-        </section>
+            {shouldShowCountdown && countdown !== null && <Countdown value={countdown} />}
+            {shouldFlipCards && <Tally value={tally} />}
+          </section>
+        </div>
       </div>
     </div>
   );

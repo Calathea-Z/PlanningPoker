@@ -24,30 +24,52 @@ export default function JoinScreen({
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md p-6 bg-white shadow rounded-2xl space-y-4">
-        <h1 className="text-2xl font-semibold">Planning Poker</h1>
-
-        <div className="space-y-2">
-          <label className="block text-sm">Your name</label>
-          <input className="w-full border rounded px-3 py-2"
-                 value={name} onChange={e=>setName(e.target.value)} />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
+      <div className="w-full max-w-md p-8 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 shadow-2xl rounded-3xl space-y-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            Planning Poker
+          </h1>
+          <p className="text-slate-400 mt-2">Collaborative story point estimation</p>
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-sm">Room code</label>
-          <div className="flex gap-2">
-            <input className="flex-1 border rounded px-3 py-2 uppercase"
-                   value={code} onChange={e=>setCode(e.target.value.toUpperCase())}/>
-            <button className="px-3 py-2 border rounded" onClick={handleNewRoom}>New</button>
+        <div className="space-y-3">
+          <label className="block text-sm font-medium text-slate-300">Your name</label>
+          <input 
+            className="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all"
+            placeholder="Enter your name"
+            value={name} 
+            onChange={e=>setName(e.target.value)} 
+          />
+        </div>
+
+        <div className="space-y-3">
+          <label className="block text-sm font-medium text-slate-300">Room code</label>
+          <div className="flex gap-3">
+            <input 
+              className="flex-1 bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-400 uppercase tracking-wider focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all"
+              placeholder="ROOM CODE"
+              value={code} 
+              onChange={e=>setCode(e.target.value.toUpperCase())}
+            />
+            <button 
+              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              onClick={handleNewRoom}
+            >
+              New
+            </button>
           </div>
         </div>
 
-        <button className="w-full bg-black text-white rounded-lg py-2" onClick={handleJoin}>
-          Join
+        <button 
+          className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-xl py-4 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          onClick={handleJoin}
+          disabled={!name || !code}
+        >
+          Join Room
         </button>
 
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-slate-500 text-center">
           API should be at http://localhost:5083 (update vite.config.ts if different)
         </p>
       </div>
