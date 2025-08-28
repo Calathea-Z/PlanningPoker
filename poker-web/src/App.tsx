@@ -15,13 +15,11 @@ import type { RoomState } from './types/RoomState';
 export default function App() {
   const { me, room, setMe, setRoom } = useUI();
 
-  // Countdown (encapsulated)
   const [countdown, startCountdown, resetCountdown] = useCountdown();
 
-  // Realtime events (keep hook order stable; normalize undefined → null)
   useRoomEvents({ room: room ?? null, setRoom });
 
-  // Stable handlers (guard against room being null at call-time)
+  // (guard against room being null at call-time)
   const handleReveal = useCallback(async () => {
     if (!room) return;
     await revealAction(room.code);
@@ -34,13 +32,9 @@ export default function App() {
     resetCountdown();
   }, [room, resetCountdown]);
 
-  // ---- All hooks above this line. Derived values below are also hooks; keep them above any return. ----
-
-  // Safe alias for TS and derived calculations (may be undefined before join)
   const r: RoomState | undefined = room ?? undefined;
   const meName = me?.name ?? '';
 
-  // Derived UI state (memoized) - computed even pre-join, but harmlessly
   const revealed = r?.revealed ?? false;
 
   const voteCount = useMemo(
@@ -73,14 +67,12 @@ export default function App() {
     return Math.round(avg * 10) / 10;
   }, [revealed, r]);
 
-  // Decide which UI to render (but do NOT put hooks below this)
   const isJoined = !!(me && room);
 
   if (!isJoined) {
     return <JoinScreen onSetMe={setMe} onSetCode={() => {}} />;
   }
 
-  // At this point r is defined at runtime (but we computed everything safely already)
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-5xl mx-auto space-y-6">
