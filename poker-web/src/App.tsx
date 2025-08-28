@@ -1,6 +1,7 @@
 import { useMemo, useCallback } from 'react';
 import { useUI } from './store';
 import { useRoomEvents } from './hooks/useRoomEvents';
+import { useConsensus } from './hooks/useConsensus';
 import { reveal as revealAction, resetRound as resetAction } from './services/roomActions';
 import Header from './components/Header';
 import JoinScreen from './components/JoinScreen';
@@ -16,6 +17,7 @@ export default function App() {
   const { me, room, setMe, setRoom } = useUI();
 
   useRoomEvents({ room: room ?? null, setRoom });
+  useConsensus(room);
 
   // (guard against room being null at call-time)
   const handleReveal = useCallback(async () => {
@@ -91,7 +93,7 @@ export default function App() {
                 onReset={handleReset}
               />
             </div>
-            <div className="w-80">
+            <div className="w-96">
               <IssuePanel roomCode={r!.code} issueKey={r!.issueKey ?? null} revealed={revealed} />
             </div>
           </div>
