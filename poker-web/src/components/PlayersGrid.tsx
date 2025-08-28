@@ -7,7 +7,7 @@ export default function PlayersGrid({
   shouldFlipCards: boolean;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-3 gap-1.5">
       {Object.entries(room.players || {}).map(([id, p]) => {
         const voted = id in (room.votes || {});
         const val = room.votes?.[id];
@@ -15,7 +15,7 @@ export default function PlayersGrid({
         
         return (
           <div key={id}
-               className={`aspect-[4/3] rounded-xl border-2 transition-all duration-700 shadow-lg ${
+               className={`aspect-[2.5/3.5] rounded-lg border-2 transition-all duration-700 shadow-lg ${
                  isSpectator
                    ? 'bg-gradient-to-br from-purple-600 to-purple-700 border-purple-500'
                    : voted 
@@ -28,15 +28,15 @@ export default function PlayersGrid({
                  transform: shouldFlipCards ? 'rotateY(180deg)' : 'rotateY(0deg)', 
                  transformStyle: 'preserve-3d' 
                }}>
-            <div className="h-full flex flex-col items-center justify-center p-2"
+            <div className="h-full flex flex-col items-center justify-center p-1"
                  style={{ 
                    transform: shouldFlipCards ? 'rotateY(180deg)' : 'rotateY(0deg)', 
                    backfaceVisibility: 'hidden' 
                  }}>
               <div className="text-xs font-medium text-center mb-1 text-white flex items-center gap-1">
-                {p.name}
+                <span className="truncate max-w-full">{p.name}</span>
                 {isSpectator && (
-                  <span className="text-xs bg-purple-500 text-white px-1 rounded-full">
+                  <span className="text-xs bg-purple-500 text-white px-1 rounded-full flex-shrink-0">
                     👁
                   </span>
                 )}
@@ -44,7 +44,7 @@ export default function PlayersGrid({
               {isSpectator ? (
                 <div className="text-xs text-purple-200">Spectator</div>
               ) : voted ? (
-                <div className={`text-xl font-bold ${shouldFlipCards ? 'text-white' : 'text-white'}`}>
+                <div className={`text-lg font-bold ${shouldFlipCards ? 'text-white' : 'text-white'}`}>
                   {shouldFlipCards ? (val ?? '?') : '✓'}
                 </div>
               ) : (
