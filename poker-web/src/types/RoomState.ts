@@ -4,6 +4,7 @@ export type RoomState = {
     code: string
     issueKey?: string | null
     revealed: boolean
+    countdown?: number | null
     players: Record<string, Player>
     votes: Record<string, number | null> // null = "?"
   }

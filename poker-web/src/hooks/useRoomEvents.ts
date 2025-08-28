@@ -7,8 +7,8 @@ export function useRoomEvents({
   room,
   setRoom,
 }: {
-  room: RoomState | null | undefined;        // allow undefined/null in
-  setRoom: (next: RoomState) => void;        // but never set null out
+  room: RoomState | null | undefined;
+  setRoom: (next: RoomState) => void;
 }) {
   const roomRef = useRef<RoomState | null>(room ?? null);
   useEffect(() => { roomRef.current = room ?? null; }, [room]);
@@ -30,16 +30,30 @@ export function useRoomEvents({
       setRoom({ ...prev, issueKey: k });
     });
 
+    // New countdown event
+    conn.on('countdown_started', (countdownValue: number) => {
+      const prev = roomRef.current;
+      if (!prev) return;
+      setRoom({ ...prev, countdown: countdownValue });
+    });
+
+    // New countdown update event
+    conn.on('countdown_updated', (countdownValue: number | null) => {
+      const prev = roomRef.current;
+      if (!prev) return;
+      setRoom({ ...prev, countdown: countdownValue });
+    });
+
     conn.on('revealed', (votes: Record<string, number | null>) => {
       const prev = roomRef.current;
       if (!prev) return;
-      setRoom({ ...prev, votes, revealed: true });
+      setRoom({ ...prev, votes, revealed: true, countdown: null });
     });
 
     conn.on('round_reset', () => {
       const prev = roomRef.current;
       if (!prev) return;
-      setRoom({ ...prev, votes: {}, revealed: false, issueKey: null });
+      setRoom({ ...prev, votes: {}, revealed: false, issueKey: null, countdown: null });
     });
 
     ensureConnected().catch(err => console.error('SignalR start failed:', err));
@@ -47,6 +61,8 @@ export function useRoomEvents({
       conn.off('room_state');
       conn.off('player_voted');
       conn.off('issue_attached');
+      conn.off('countdown_started');
+      conn.off('countdown_updated');
       conn.off('revealed');
       conn.off('round_reset');
     };

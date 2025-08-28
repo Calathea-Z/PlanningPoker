@@ -30,7 +30,12 @@ public class RoomService : IRoomService
 
     public async Task<Dictionary<string, int?>> RevealAsync(string code)
     {
-        await _store.UpdateAsync(code, s => s.Revealed = true);
+        // Start countdown instead of immediately revealing
+        await _store.UpdateAsync(code, s => { 
+            s.Revealed = false; 
+            s.Countdown = 3; 
+        });
+        
         var state = await _store.GetAsync(code);
         var result = new Dictionary<string, int?>();
         if (state != null && state.Votes != null)
@@ -54,8 +59,26 @@ public class RoomService : IRoomService
         return result;
     }
 
+    public Task CompleteRevealAsync(string code)
+    {
+        return _store.UpdateAsync(code, s => { 
+            s.Revealed = true; 
+            s.Countdown = null; 
+        });
+    }
+
+    public Task UpdateCountdownAsync(string code, int? countdown)
+    {
+        return _store.UpdateAsync(code, s => s.Countdown = countdown);
+    }
+
     public Task ResetRoundAsync(string code)
-        => _store.UpdateAsync(code, s => { s.Revealed = false; s.Votes.Clear(); s.IssueKey = null; });
+        => _store.UpdateAsync(code, s => { 
+            s.Revealed = false; 
+            s.Votes.Clear(); 
+            s.IssueKey = null; 
+            s.Countdown = null; 
+        });
 
     public Task<RoomState?> GetAsync(string code) => _store.GetAsync(code);
     public Task RemoveConnectionAsync(string connectionId) => _store.RemoveConnectionAsync(connectionId);
