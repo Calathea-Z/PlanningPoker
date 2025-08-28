@@ -6,7 +6,7 @@ public interface IRoomService
 {
     Task<string> CreateRoomAsync(TimeSpan ttl);
     Task<bool> JoinAsync(string code, string connectionId, string name, bool observer);
-    Task AttachIssueAsync(string code, string issueKey);
+    Task<bool> AttachIssueAsync(string code, string issueKey);
     Task VoteAsync(string code, string connectionId, int? value);
     Task<Dictionary<string, int?>> RevealAsync(string code);
     Task CompleteRevealAsync(string code);
@@ -14,4 +14,6 @@ public interface IRoomService
     Task ResetRoundAsync(string code);
     Task<RoomState?> GetAsync(string code);
     Task RemoveConnectionAsync(string connectionId);
+    Task<bool> CommitToJiraAsync(string code, string issueKey, int storyPoints);
+    Task<JiraIssue?> GetJiraIssueAsync(string issueKey);
 }

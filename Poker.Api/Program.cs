@@ -13,6 +13,9 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
 builder.Services.AddSignalR();
 builder.Services.AddControllers();
 
+// HTTP Client for JIRA API
+builder.Services.AddHttpClient<IJiraService, JiraService>();
+
 // Core services
 builder.Services.AddSingleton<IRoomService, RoomService>();
 

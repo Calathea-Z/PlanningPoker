@@ -33,10 +33,14 @@ export async function resetRound(roomCode: string) {
 }
 
 export async function commitToJira(roomCode: string, issueKey: string, points: number) {
-  const res = await fetch(`/api/rooms/${roomCode}/commit`, {
+  const res = await fetch('/api/jira/commit', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ IssueKey: issueKey, FinalPoints: points }),
+    body: JSON.stringify({ 
+      RoomCode: roomCode, 
+      IssueKey: issueKey, 
+      StoryPoints: points 
+    }),
   });
   return res.ok;
 }

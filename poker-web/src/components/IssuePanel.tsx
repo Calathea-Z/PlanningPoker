@@ -28,7 +28,7 @@ export default function IssuePanel({
             <input
               id="issueKey"
               className="block w-full bg-slate-900/40 border border-slate-600/80 rounded-xl px-3 py-2 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400 text-sm"
-              placeholder="Enter issue key (e.g., ISSUE-123)"
+              placeholder="ISSUE-123"
               value={localKey}
               onChange={(e) => setLocalKey(e.target.value)}
               spellCheck={false}

@@ -6,10 +6,12 @@ namespace Poker.Api.Services;
 public class RoomService : IRoomService
 {
     private readonly IRoomStore _store;
+    private readonly IJiraService _jiraService;
 
-    public RoomService(IRoomStore store)
+    public RoomService(IRoomStore store, IJiraService jiraService)
     {
         _store = store;
+        _jiraService = jiraService;
     }
 
     public async Task<string> CreateRoomAsync(TimeSpan ttl)
@@ -22,8 +24,19 @@ public class RoomService : IRoomService
     public Task<bool> JoinAsync(string code, string connectionId, string name, bool observer)
         => _store.JoinAsync(code, connectionId, name, observer);
 
-    public Task AttachIssueAsync(string code, string issueKey)
-        => _store.UpdateAsync(code, s => s.IssueKey = issueKey);
+    public async Task<bool> AttachIssueAsync(string code, string issueKey)
+    {
+        // First, try to fetch the issue from JIRA to validate it exists
+        var jiraIssue = await _jiraService.GetIssueAsync(issueKey);
+        if (jiraIssue == null)
+        {
+            return false; // Issue not found in JIRA
+        }
+
+        // If issue exists, attach it to the room
+        await _store.UpdateAsync(code, s => s.IssueKey = issueKey);
+        return true;
+    }
 
     public Task VoteAsync(string code, string connectionId, int? value)
         => _store.UpdateAsync(code, s => s.Votes[connectionId] = value?.ToString() ?? "?");
@@ -82,6 +95,18 @@ public class RoomService : IRoomService
 
     public Task<RoomState?> GetAsync(string code) => _store.GetAsync(code);
     public Task RemoveConnectionAsync(string connectionId) => _store.RemoveConnectionAsync(connectionId);
+
+    public async Task<bool> CommitToJiraAsync(string code, string issueKey, int storyPoints)
+    {
+        // Update the story points in JIRA
+        var success = await _jiraService.UpdateIssueStoryPointsAsync(issueKey, storyPoints);
+        return success;
+    }
+
+    public async Task<JiraIssue?> GetJiraIssueAsync(string issueKey)
+    {
+        return await _jiraService.GetIssueAsync(issueKey);
+    }
 
     private static string NewRoomCode(int len = 6)
     {
